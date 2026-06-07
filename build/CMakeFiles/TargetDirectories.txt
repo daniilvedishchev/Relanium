@@ -1,0 +1,3 @@
+/Users/kodalir/GitHub/Relanium/build/CMakeFiles/RELANIUM.dir
+/Users/kodalir/GitHub/Relanium/build/CMakeFiles/edit_cache.dir
+/Users/kodalir/GitHub/Relanium/build/CMakeFiles/rebuild_cache.dir
