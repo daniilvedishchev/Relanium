@@ -23,7 +23,7 @@ class Socket {
 private:
     int fd = -1;
 
-    Status status;
+    std::atomic<Status> status;
 
     uint16_t port;
     uint16_t backlog;
@@ -33,7 +33,7 @@ private:
     std::unordered_set<int> clients;
 
     sockaddr_in address;
-    
+
     std::mutex clientMutex;
 
     void makeIPv4TCPAddress();
@@ -41,5 +41,6 @@ private:
     void waitForClients();
 public:
     Socket(uint16_t port,uint16_t backlog);
+    ~Socket();
     void sendSignal(std::string& signal);
 };

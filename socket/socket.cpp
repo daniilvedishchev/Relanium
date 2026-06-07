@@ -57,7 +57,7 @@ void Socket::attachAddressToOpenSocket(){
 
 void Socket::sendSignal(std::string& signal){
     std::unordered_set<int> clientCpy;
-    
+
     {
         std::lock_guard<std::mutex> lock(clientMutex);
         clientCpy = clients;
@@ -66,7 +66,19 @@ void Socket::sendSignal(std::string& signal){
     for (auto& client : clientCpy){
         int success = send(client,signal.data(),signal.size(),0);
         if (success == -1) {
+            clients.erase(client);
             throw SendException("Send failure.");
         }
+    }
+}
+
+Socket::~Socket(){
+    status = Status::Stopped;
+    close(fd);
+    waiter.join();
+
+    for (auto& client : clients){
+        clients.erase(client);
+        close(client);
     }
 }
