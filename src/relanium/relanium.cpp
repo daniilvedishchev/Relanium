@@ -16,7 +16,7 @@ void relanium::send(std::string& signal){
 int main(){
     relanium RELANIUM = relanium(8080,10);
     while (true) {
-        std::string signal = "BTCUSDC BUY 0.1 73400 75000\n";
+        std::string signal = "BTCUSD BUY 0.01 45000 75000\n";
         RELANIUM.send(signal);
         std::this_thread::sleep_for(std::chrono::seconds(5));
     }

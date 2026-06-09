@@ -1,10 +1,16 @@
+#include <Trade/Trade.mqh>
+
 #property strict
 #property version "1.00"
 
 const string ServerHost = "127.0.0.1";
+double tolerance = 0.000001;
 uint ServerPort = 8080;
 uint TimeoutMs = 1000;
 uint TimerMs = 200;
+
+
+CTrade trade;
 
 enum SignalSide {
    SIGNAL_BUY,
@@ -41,11 +47,22 @@ void OnTimer(){
    if (bytesRead == 0) return;
    
    string msg = CharArrayToString(buffer,0,bytesRead);
-   HandleSignal(msg);
+   Signal signal{};
+   HandleSignal(msg,signal);
+   executeTrade(signal);
 }
 
-void HandleSignal(string msgSignal){
-   Signal signal{};
+void executeTrade(Signal& signal){
+   if (signal.SIDE == SIGNAL_BUY){
+      trade.Buy(signal.QTY,signal.SYMBOL,0,signal.SL,signal.TP);
+   } else if (signal.SIDE == SIGNAL_SELL){
+      trade.Sell(signal.QTY,signal.SYMBOL,0,signal.SL,signal.TP);
+   } else {
+      return;
+   }
+}
+
+void HandleSignal(string& msgSignal, Signal& signal){
    
    string splittedStringArray[];
    ushort separator = StringGetCharacter(" ",0);
@@ -81,11 +98,23 @@ void resolveSignal(Signal& signal, string& splitted[]){
 }
 
 bool validateSignal(Signal& sig){
+
+   double step = SymbolInfoDouble(sig.SYMBOL,SYMBOL_VOLUME_STEP);
+   double minVol = SymbolInfoDouble(sig.SYMBOL,SYMBOL_VOLUME_MIN);
+   double maxVol = SymbolInfoDouble(sig.SYMBOL,SYMBOL_VOLUME_MAX);
+   
+   double steps = sig.QTY/step;
+   double roundedSteps = MathRound(steps);
+   double difference = MathAbs(steps - roundedSteps);
+   
    if (StringLen(sig.SYMBOL)<=0) return false;
    if (sig.SIDE == SIGNAL_UNKNOWN) return false;
    if (sig.QTY <= 0) return false;
    if (sig.SL <= 0) return false;
    if (sig.TP <= 0) return false;
+   if (sig.QTY > maxVol || sig.QTY < minVol ) return false;
+   if (difference > tolerance) return false;
+   
    return true;
 }
   
