@@ -3,6 +3,8 @@
 #include "socket/socket.hpp"
 #include <cstdint>
 #include <string>
+#include <chrono>
+#include <thread>
 
 class relanium {
 private:

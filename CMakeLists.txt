@@ -10,4 +10,3 @@ add_executable(RELANIUM src/relanium/relanium.cpp
 target_include_directories(RELANIUM PRIVATE 
     ${CMAKE_SOURCE_DIR}
 )
-

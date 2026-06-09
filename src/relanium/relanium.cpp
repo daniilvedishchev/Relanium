@@ -1,4 +1,7 @@
 #include "src/relanium/relanium.hpp"
+#include <chrono>
+#include <string>
+#include <thread>
 
 /**
  * @brief signal := "SYMBOL SIDE QTY SL TP"
@@ -11,7 +14,11 @@ void relanium::send(std::string& signal){
 }
 
 int main(){
-    Socket RELANIUM(8080,10);
-    while (true) {}
+    relanium RELANIUM = relanium(8080,10);
+    while (true) {
+        std::string signal = "BTCUSDC BUY 0.1 73400 75000\n";
+        RELANIUM.send(signal);
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
     return 0;
 }
